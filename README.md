@@ -5,4 +5,4 @@ You are building a rival app to a popular photo-sharing website. As a part of th
 3. Activity reporting, so that a user knows about the activities performed by themselves and the following users.
 4. Trending, show top 3 most liked photos.
 
-Details app requirement can be accessed [here](https://sea-labs-id.git-pages.garena.com/trainers/digi-wiki/docs/be-stream/assignments/fundamentals/%5Bunsearchable%5D-activity-reporter-fa8eac5c-6dd9-4c64-8c0c-5eb25ff23696/)
+Details app requirement can be accessed [here](https://sea-labs-id.git-pages.garena.com/trainers/digi-wiki/docs/be-stream/assignments/fundamentals/%5Bunsearchable%5D-activity-reporter-f9695b76-31cc-4b2e-84fd-24e743bcafb5/)
