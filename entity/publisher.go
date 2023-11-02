@@ -6,6 +6,7 @@ type Publisher interface{
 	UploadFoto() error
 	AddLiker(Follower)
 	notifyFollowers(Notification)
+	notifyActivityToFollower(string)
 	UserName() string
 	UserPhoto() bool
 }

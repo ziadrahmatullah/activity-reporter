@@ -42,6 +42,13 @@ func (u *User) notifyFollowers(notification Notification) {
 	}
 }
 
+func (u *User) notifyActivityToFollower(message string){
+	for _, follower := range u.followers{
+		follower.FollowerActivityNotify(message)
+	}
+}
+
+
 func (u *User) AddLiker(follower Follower) {
 	u.whoLikedMyPhoto = append(u.whoLikedMyPhoto, follower)
 }
@@ -61,6 +68,10 @@ func (u *User) ShowLikes() int {
 //============================================================
 func (u *User) FollowerNotify(publisher Publisher, notification Notification) {
 	message := notification.Notify(publisher, u)
+	u.notifications = append(u.notifications, message)
+}
+
+func (u *User) FollowerActivityNotify(message string){
 	u.notifications = append(u.notifications, message)
 }
 
@@ -95,9 +106,12 @@ func (u *User) LikedPhoto(publisher Publisher) (err error) {
 	return apperror.ErrLikePhotoUserNotFollowedYet
 }
 
+
 func (u *User) notifyPublisher(publisher Publisher, notification Notification) {
 	publisher.PublisherNotify(u, notification)
-	u.notifyFollowers(&NotfyLikeToFollower{})
+	tempNotification := &NotifyActivityToFollower{}
+	message := tempNotification.Notify(publisher, u)
+	u.notifyActivityToFollower(message)
 }
 
 func (u *User) isFollowed(publisher Publisher) bool {
@@ -120,4 +134,11 @@ func (u *User) isPhotoAlreadyLiked(publisher Publisher) bool {
 
 func (u *User) isHigherLikeThan(user *User) bool {
 	return u.ShowLikes() > user.ShowLikes()
+}
+
+func (u *User) DisplayActivity() (output string){
+	for _, notification := range u.notifications {
+		output += notification + "\n"
+	}
+	return
 }

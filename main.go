@@ -4,11 +4,9 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"strings"
 
-	"git.garena.com/sea-labs-id/bootcamp/batch-02/ziad-rahmatullah/assignment-activity-reporter/apperror"
-	"git.garena.com/sea-labs-id/bootcamp/batch-02/ziad-rahmatullah/assignment-activity-reporter/constant"
 	"git.garena.com/sea-labs-id/bootcamp/batch-02/ziad-rahmatullah/assignment-activity-reporter/entity"
+	"git.garena.com/sea-labs-id/bootcamp/batch-02/ziad-rahmatullah/assignment-activity-reporter/util"
 )
 
 func promptInput(scanner *bufio.Scanner, text string) string {
@@ -17,25 +15,6 @@ func promptInput(scanner *bufio.Scanner, text string) string {
 	return scanner.Text()
 }
 
-func processSocialGraphValid(app *entity.SocialApp, input string) (err error){
-	words := strings.Split(input, " ")
-	if len(words) != 3 || words[1] != constant.Follows{
-		return apperror.ErrInvalidKeyword
-	}
-	user1, user2 := words[0], words[2]
-	ok1 , userOne := app.IsUserInApp(user1)
-	if !ok1{
-		userOne = entity.NewUser(user1)
-		app.AddUser(userOne)
-	}
-	ok2 , userTwo := app.IsUserInApp(user2)
-	if !ok2{
-		userTwo = entity.NewUser(user2)
-		app.AddUser(userTwo)
-	}
-	userOne.Follow(userTwo)
-	return
-}
 
 func main(){
 	scanner := bufio.NewScanner(os.Stdin)
@@ -49,18 +28,29 @@ func main(){
 	socialApp := entity.NewSocialApp()
 
 	for !exit{
+		var err error
 		fmt.Println(menu)
 		input := promptInput(scanner, "Enter menu: ")
 
 		switch input{
 		case "1":
 			socialGraph := promptInput(scanner, "Setup social graph: ")
-			err := processSocialGraphValid(socialApp, socialGraph)
-			if err != nil{
-				fmt.Println(err)
-			}
+			err = util.ProcessSocialGraphValid(socialApp, socialGraph)
 		case "2":
-			
+			userAction := promptInput(scanner, "Enter user Actions: ")
+			err = util.ProcessUserAction(socialApp, userAction)
+		case "3":
+			displayUser := promptInput(scanner, "Display activity for: ")
+			err = util.ProcessDisplayActivity(socialApp, displayUser)
+		case "4":
+			fmt.Print(socialApp.Trending())
+		case "5":
+			exit = true
+		default:
+			fmt.Println("invalid menu")
+		}
+		if err!= nil{
+			fmt.Println(err)
 		}
 	}
 }
