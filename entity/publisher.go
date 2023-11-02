@@ -4,7 +4,8 @@ type Publisher interface{
 	PublisherNotify(Follower, Notification)
 	FollowedBy(Follower)
 	UploadFoto() error
+	AddLiker(Follower)
 	notifyFollowers(Notification)
-	userName() string
-	userPhoto() bool
+	UserName() string
+	UserPhoto() bool
 }

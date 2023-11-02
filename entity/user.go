@@ -5,13 +5,13 @@ import (
 )
 
 type User struct {
-	name          string
-	followers     []Follower
-	followings    []Publisher
-	whoLikedPhoto []Follower
-	whoPhotoLiked []Publisher
-	photo         bool
-	notifications []string
+	name            string
+	followers       []Follower
+	followings      []Publisher
+	whoLikedMyPhoto []Follower
+	whoPhotoILiked  []Publisher
+	photo           bool
+	notifications   []string
 }
 
 func NewUser(name string) *User {
@@ -23,7 +23,7 @@ func (u *User) PublisherNotify(follower Follower, notification Notification) {
 	u.notifications = append(u.notifications, message)
 }
 
-func (u *User) FollowedBy(follower Follower){
+func (u *User) FollowedBy(follower Follower) {
 	u.followers = append(u.followers, follower)
 }
 
@@ -42,12 +42,20 @@ func (u *User) notifyFollowers(notification Notification) {
 	}
 }
 
-func (u *User) userName() string {
+func (u *User) AddLiker(follower Follower) {
+	u.whoLikedMyPhoto = append(u.whoLikedMyPhoto, follower)
+}
+
+func (u *User) UserName() string {
 	return u.name
 }
 
-func (u *User) userPhoto() bool {
+func (u *User) UserPhoto() bool {
 	return u.photo
+}
+
+func (u *User) ShowLikes() int {
+	return len(u.whoLikedMyPhoto)
 }
 
 //============================================================
@@ -69,27 +77,27 @@ func (u *User) Follow(publisher Publisher) (err error) {
 }
 
 func (u *User) LikedPhoto(publisher Publisher) (err error) {
-	if !publisher.userPhoto() {
+	if !publisher.UserPhoto() {
 		if u == publisher {
 			return apperror.ErrYouDontHaveAPhoto
 		}
 		return apperror.ErrUserDoesntHaveAPhoto
 	}
-	if u == publisher{
-		u.whoLikedPhoto = append(u.whoLikedPhoto, u)
-		u.notifyPublisher(publisher, &NotifyLike{})	
-		return
-	} else if u.isFollowed(publisher){
-		u.whoPhotoLiked = append(u.whoPhotoLiked, publisher)
+	if u.isPhotoAlreadyLiked(publisher) {
+		return apperror.ErrAlreadyLikedPhoto
+	}
+	if u.isFollowed(publisher) || u == publisher {
+		u.whoPhotoILiked = append(u.whoPhotoILiked, publisher)
+		publisher.AddLiker(u)
 		u.notifyPublisher(publisher, &NotifyLike{})
 		return
-	}	
+	}
 	return apperror.ErrLikePhotoUserNotFollowedYet
 }
 
 func (u *User) notifyPublisher(publisher Publisher, notification Notification) {
 	publisher.PublisherNotify(u, notification)
-	u.notifyFollowers(notification)
+	u.notifyFollowers(&NotfyLikeToFollower{})
 }
 
 func (u *User) isFollowed(publisher Publisher) bool {
@@ -99,4 +107,17 @@ func (u *User) isFollowed(publisher Publisher) bool {
 		}
 	}
 	return false
+}
+
+func (u *User) isPhotoAlreadyLiked(publisher Publisher) bool {
+	for _, user := range u.whoPhotoILiked {
+		if user.UserName() == publisher.UserName() {
+			return true
+		}
+	}
+	return false
+}
+
+func (u *User) isHigherLikeThan(user *User) bool {
+	return u.ShowLikes() > user.ShowLikes()
 }

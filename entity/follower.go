@@ -5,5 +5,5 @@ type Follower interface{
 	Follow(Publisher) error
 	LikedPhoto(Publisher) error
 	notifyPublisher(Publisher, Notification)
-	userName() string
+	UserName() string
 }
