@@ -1,6 +1,7 @@
 package entity
 
-type NotifyFollower interface{
-	NotifyFollower()
-}
+// type NotifyFollower interface{
+// 	NotifyFollower()
+// }
+
 

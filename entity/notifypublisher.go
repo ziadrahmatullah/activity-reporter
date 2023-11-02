@@ -1,6 +1,6 @@
 package entity
 
-type NotifyPublisher interface{
-	NotifyPublisher()
-}
+// type NotifyPublisher interface{
+// 	NotifyPublisher()
+// }
 
