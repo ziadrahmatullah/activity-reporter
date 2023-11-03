@@ -7,13 +7,13 @@ import (
 )
 
 type User struct {
-	name            string
-	followers       []Follower
-	followings      []Publisher
-	whoLikedMyPhoto []Follower
-	whoPhotoILiked  []Publisher
-	havePhoto       bool
-	notifications   []string
+	name          string
+	followers     []Follower
+	followings    []Publisher
+	photoLikedBy  []Follower
+	photoLike     []Publisher
+	havePhoto     bool
+	notifications []string
 }
 
 func NewUser(name string) *User {
@@ -22,7 +22,7 @@ func NewUser(name string) *User {
 }
 
 func (u *User) PublisherNotificationAboutLike(follower Follower, notification Notification) {
-	u.whoLikedMyPhoto = append(u.whoLikedMyPhoto, follower)
+	u.photoLikedBy = append(u.photoLikedBy, follower)
 	message := notification.Notify(u, follower)
 	u.notifications = append(u.notifications, message)
 }
@@ -64,7 +64,7 @@ func (u *User) UserPhoto() bool {
 }
 
 func (u *User) ShowLikes() int {
-	return len(u.whoLikedMyPhoto)
+	return len(u.photoLikedBy)
 }
 
 func (u *User) FollowerNotification(publisher Publisher, notification Notification) {
@@ -99,11 +99,11 @@ func (u *User) LikedPhoto(publisher Publisher) (err error) {
 		return apperror.ErrAlreadyLikedPhoto
 	}
 	if u == publisher {
-		u.whoPhotoILiked = append(u.whoPhotoILiked, publisher)
+		u.photoLike = append(u.photoLike, publisher)
 		u.notifyActivityToAll(publisher, &NotifyLike{})
 		return
 	} else if u.IsFollowed(publisher) {
-		u.whoPhotoILiked = append(u.whoPhotoILiked, publisher)
+		u.photoLike = append(u.photoLike, publisher)
 		u.notifyActivityToAll(publisher, &NotifyLike{})
 		u.FollowerNotification(publisher, &NotifyMySelfAboutLike{})
 		return
@@ -128,7 +128,7 @@ func (u *User) IsFollowed(publisher Publisher) bool {
 }
 
 func (u *User) isPhotoAlreadyLiked(publisher Publisher) bool {
-	for _, user := range u.whoPhotoILiked {
+	for _, user := range u.photoLike {
 		if user.UserName() == publisher.UserName() {
 			return true
 		}
