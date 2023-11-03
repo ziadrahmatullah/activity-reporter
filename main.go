@@ -19,7 +19,7 @@ func promptInput(scanner *bufio.Scanner, text string) string {
 func main(){
 	scanner := bufio.NewScanner(os.Stdin)
 	exit := false
-	menu :="Activity Reporter\n" +
+	menu :="\nActivity Reporter\n" +
 		"1. Setup\n" +
 		"2. Action\n" +
 		"3. Display\n" +
@@ -51,6 +51,7 @@ func main(){
 			fmt.Println("invalid menu")
 		}
 		if err!= nil{
+			fmt.Println()
 			fmt.Println(err)
 		}
 	}

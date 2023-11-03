@@ -84,6 +84,9 @@ func ProcessUserAction(app *application.SocialApp, input string) (err error) {
 }
 
 func ProcessDisplayActivity(app *application.SocialApp, input string)(err error){
+	if input == ""{
+		return apperror.ErrInvalidKeyword
+	}
 	ok, userOne :=app.IsUserInApp(input)
 	if !ok {
 		return fmt.Errorf("unknown user %s", input)

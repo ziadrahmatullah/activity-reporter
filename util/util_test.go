@@ -151,5 +151,15 @@ func TestProcessDisplayActivity(t *testing.T) {
 
 		assert.Nil(t, err)
 	})
+
+	t.Run("should return ErrInvalidKeyword when input 'A lkes B photo'", func(t *testing.T) {
+		socialApp := application.NewSocialApp()
+		util.ProcessSocialGraph(socialApp, "Alice follows Bob")
+		expected := apperror.ErrInvalidKeyword
+
+		err := util.ProcessDisplayActivity(socialApp, "")
+
+		assert.ErrorIs(t, err, expected)
+	})
 	
 }

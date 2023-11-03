@@ -22,6 +22,7 @@ func NewUser(name string) *User {
 }
 
 func (u *User) PublisherNotificationAboutLike(follower Follower, notification Notification) {
+	u.whoLikedMyPhoto = append(u.whoLikedMyPhoto, follower)
 	message := notification.Notify(u, follower)
 	u.notifications = append(u.notifications, message)
 }
@@ -52,10 +53,6 @@ func (u *User) notifyActivityToFollowers(message string, publisher Publisher) {
 			follower.FollowerNotificationAboutActivity(message)
 		}
 	}
-}
-
-func (u *User) addLiker(follower Follower) {
-	u.whoLikedMyPhoto = append(u.whoLikedMyPhoto, follower)
 }
 
 func (u *User) UserName() string {
@@ -104,12 +101,10 @@ func (u *User) LikedPhoto(publisher Publisher) (err error) {
 	}
 	if u == publisher {
 		u.whoPhotoILiked = append(u.whoPhotoILiked, publisher)
-		publisher.addLiker(u)
 		u.notifyActivityToAll(publisher, &NotifyLike{})
 		return
 	} else if u.IsFollowed(publisher) {
 		u.whoPhotoILiked = append(u.whoPhotoILiked, publisher)
-		publisher.addLiker(u)
 		u.notifyActivityToAll(publisher, &NotifyLike{})
 		u.FollowerNotification(publisher, &NotifyMySelfAboutLike{})
 		return
