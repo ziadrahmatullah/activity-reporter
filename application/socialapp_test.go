@@ -61,6 +61,7 @@ func TestTrending(t *testing.T) {
 		app.AddUser(Bob)
 		app.AddUser(Bill)
 		app.AddUser(John)
+		app.AddUser(Cecil)
 		Alice.Follow(Bob)
 		Cecil.Follow(Alice)
 		Alice.Follow(Bill)

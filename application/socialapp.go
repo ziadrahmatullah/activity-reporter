@@ -24,9 +24,9 @@ func (sa *SocialApp) Trending() string{
 	title := "Trending photos:\n"
 	i := 0
 	for _, user := range sa.users{
-		// if i == 3{
-		// 	break
-		// }
+		if i == 3{
+			break
+		}
 		if !user.UserPhoto(){
 			continue
 		}

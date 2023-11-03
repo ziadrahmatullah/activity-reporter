@@ -89,9 +89,6 @@ func TestIsHigherLikeThan(t *testing.T){
 	})
 }
 
-
-// =====================================================
-
 func TestFollow(t *testing.T) {
 	t.Run("should return true when Alice follows Bob",func(t *testing.T) {
 		user1, user2 := "Alice", "Bob"
@@ -212,29 +209,4 @@ func TestLikedPhoto(t *testing.T) {
 
 		assert.Equal(t, expected, activity)
 	})
-
-	// t.Run("jsisd", func(t *testing.T) {
-	// 	alice, bob, bill, john := "Alice", "Bob", "Bill", "John"
-	// 	Alice := entity.NewUser(alice)
-	// 	Bob := entity.NewUser(bob)
-	// 	Bill := entity.NewUser(bill)
-	// 	John := entity.NewUser(john)
-
-	// 	Alice.Follow(Bob)
-	// 	Alice.Follow(Bill)
-	// 	John.Follow(Bob)
-	// 	Bob.Follow(Alice)
-	// 	Bob.Follow(Bill)
-	// 	John.Follow(Alice)
-
-	// 	Alice.UploadPhoto()
-	// 	Bob.LikedPhoto(Alice)
-	// 	Bill.UploadPhoto()
-	// 	Bob.LikedPhoto(Bill)
-	// 	Bill.LikedPhoto(Bill)
-	// 	Alice.LikedPhoto(Bill)
-
-	// 	assert.Equal(t, Alice.DisplayActivity(), "fddf")
-
-	// })
 }

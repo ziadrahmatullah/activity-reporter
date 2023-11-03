@@ -67,7 +67,6 @@ func (u *User) ShowLikes() int {
 	return len(u.whoLikedMyPhoto)
 }
 
-//============================================================
 func (u *User) FollowerNotification(publisher Publisher, notification Notification) {
 	message := notification.Notify(publisher, u)
 	u.notifications = append(u.notifications, message)
