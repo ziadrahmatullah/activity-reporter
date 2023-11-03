@@ -1,6 +1,8 @@
 package entity
 
 import (
+	"fmt"
+
 	"git.garena.com/sea-labs-id/bootcamp/batch-02/ziad-rahmatullah/assignment-activity-reporter/apperror"
 )
 
@@ -16,7 +18,6 @@ type User struct {
 
 func NewUser(name string) *User {
 	newUser := &User{name: name}
-	newUser.Follow(newUser)
 	return newUser
 }
 
@@ -33,6 +34,7 @@ func (u *User) UploadPhoto() (err error) {
 	if !u.photo {
 		u.photo = true
 		u.notifyFollowers(&NotifyUpload{})
+		u.FollowerNotify(u, &NotifyUpload{})
 		return
 	}
 	return apperror.ErrCannotUploadMorePhoto
@@ -44,9 +46,11 @@ func (u *User) notifyFollowers(notification Notification) {
 	}
 }
 
-func (u *User) notifyActivityToFollower(message string){
+func (u *User) notifyActivityToFollower(message string, publisher Publisher){
 	for _, follower := range u.followers{
-		follower.FollowerActivityNotify(message)
+		if !(follower.UserName() == publisher.UserName()){
+			follower.FollowerActivityNotify(message)
+		}
 	}
 }
 
@@ -99,10 +103,16 @@ func (u *User) LikedPhoto(publisher Publisher) (err error) {
 	if u.isPhotoAlreadyLiked(publisher) {
 		return apperror.ErrAlreadyLikedPhoto
 	}
-	if u.IsFollowed(publisher) || u == publisher {
+	if u == publisher {//|| 
 		u.whoPhotoILiked = append(u.whoPhotoILiked, publisher)
 		publisher.AddLiker(u)
 		u.notifyPublisher(publisher, &NotifyLike{})
+		return
+	}else if u.IsFollowed(publisher){
+		u.whoPhotoILiked = append(u.whoPhotoILiked, publisher)
+		publisher.AddLiker(u)
+		u.notifyPublisher(publisher, &NotifyLike{})
+		u.FollowerNotify(publisher, &NotifyMySelfAboutLike{})
 		return
 	}
 	return apperror.ErrLikePhotoUserNotFollowedYet
@@ -113,7 +123,7 @@ func (u *User) notifyPublisher(publisher Publisher, notification Notification) {
 	publisher.PublisherNotify(u, notification)
 	tempNotification := &NotifyActivityToFollower{}
 	message := tempNotification.Notify(publisher, u)
-	u.notifyActivityToFollower(message)
+	u.notifyActivityToFollower(message, publisher)
 }
 
 func (u *User) IsFollowed(publisher Publisher) bool {
@@ -139,6 +149,7 @@ func (u *User) isHigherLikeThan(user *User) bool {
 }
 
 func (u *User) DisplayActivity() (output string){
+	output += fmt.Sprintf("\n%s activities:\n", u.UserName())
 	for _, notification := range u.notifications {
 		output += notification + "\n"
 	}

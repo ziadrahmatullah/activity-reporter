@@ -19,20 +19,6 @@ func TestNewUser(t *testing.T) {
 }
 
 
-
-// =====================================================
-
-func TestFollow(t *testing.T) {
-	t.Run("should return true when Alice follows Bob",func(t *testing.T) {
-		user1, user2 := "Alice", "Bob"
-		newUser1 := entity.NewUser(user1)
-		newUser2 := entity.NewUser(user2)
-
-		newUser1.Follow(newUser2)
-
-		assert.True(t, newUser1.IsFollowed(newUser2))
-	})
-}
 func TestUploadPhoto(t *testing.T){
 	t.Run("should return added photo when call", func(t *testing.T) {
 		user1:= "Alice"
@@ -58,7 +44,7 @@ func TestUploadPhoto(t *testing.T){
 		user1, user2 := "Alice", "Bob"
 		newUser1 := entity.NewUser(user1)
 		newUser2 := entity.NewUser(user2)
-		expected := "Alice uploaded photo\n"
+		expected := "\nBob activities:\nAlice uploaded photo\n"
 
 		newUser2.Follow(newUser1)
 		newUser1.UploadPhoto()
@@ -68,6 +54,21 @@ func TestUploadPhoto(t *testing.T){
 	})
 }
 
+
+
+// =====================================================
+
+func TestFollow(t *testing.T) {
+	t.Run("should return true when Alice follows Bob",func(t *testing.T) {
+		user1, user2 := "Alice", "Bob"
+		newUser1 := entity.NewUser(user1)
+		newUser2 := entity.NewUser(user2)
+
+		newUser1.Follow(newUser2)
+
+		assert.True(t, newUser1.IsFollowed(newUser2))
+	})
+}
 func TestLikedPhoto(t *testing.T) {
 	t.Run("should return ErrYouDontHaveAPhoto when like my none photo", func(t *testing.T) {
 		user1:= "Alice"
@@ -119,8 +120,7 @@ func TestLikedPhoto(t *testing.T) {
 	t.Run("should notification you liked your photo, when like myself photo", func(t *testing.T) {
 		user1:= "Alice"
 		newUser1 := entity.NewUser(user1)
-		expected := "you liked your photo\n"
-
+		expected := "\nAlice activities:\nYou uploaded photo\nYou liked your photo\n"
 		newUser1.UploadPhoto()
 		newUser1.LikedPhoto(newUser1)
 		activity := newUser1.DisplayActivity()
@@ -132,7 +132,7 @@ func TestLikedPhoto(t *testing.T) {
 		user1, user2:= "Alice", "Bob"
 		newUser1 := entity.NewUser(user1)
 		newUser2 := entity.NewUser(user2)
-		expected := "Alice liked your photo\n"
+		expected := "\nBob activities:\nYou uploaded photo\nAlice liked your photo\n"
 
 		newUser2.UploadPhoto()
 		newUser1.Follow(newUser2)
@@ -147,7 +147,7 @@ func TestLikedPhoto(t *testing.T) {
 		newUser1 := entity.NewUser(user1)
 		newUser2 := entity.NewUser(user2)
 		newUser3 := entity.NewUser(user3)
-		expected := "Alice liked Bob's photo\n"
+		expected := "\nBill activities:\nAlice liked Bob's photo\n"
 
 		newUser2.UploadPhoto()
 		newUser1.Follow(newUser2)
@@ -157,4 +157,29 @@ func TestLikedPhoto(t *testing.T) {
 
 		assert.Equal(t, expected, activity)
 	})
+
+	// t.Run("jsisd", func(t *testing.T) {
+	// 	alice, bob, bill, john := "Alice", "Bob", "Bill", "John"
+	// 	Alice := entity.NewUser(alice)
+	// 	Bob := entity.NewUser(bob)
+	// 	Bill := entity.NewUser(bill)
+	// 	John := entity.NewUser(john)
+
+	// 	Alice.Follow(Bob)
+	// 	Alice.Follow(Bill)
+	// 	John.Follow(Bob)
+	// 	Bob.Follow(Alice)
+	// 	Bob.Follow(Bill)
+	// 	John.Follow(Alice)
+
+	// 	Alice.UploadPhoto()
+	// 	Bob.LikedPhoto(Alice)
+	// 	Bill.UploadPhoto()
+	// 	Bob.LikedPhoto(Bill)
+	// 	Bill.LikedPhoto(Bill)
+	// 	Alice.LikedPhoto(Bill)
+
+	// 	assert.Equal(t, Bill.DisplayActivity(), "fddf")
+
+	// })
 }

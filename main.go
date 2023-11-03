@@ -45,6 +45,7 @@ func main(){
 		case "4":
 			fmt.Print(socialApp.Trending())
 		case "5":
+			fmt.Println("Good bye!")
 			exit = true
 		default:
 			fmt.Println("invalid menu")

@@ -1,6 +1,7 @@
 package util
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -25,10 +26,12 @@ func alreadyUser(user1, user2 string, app *entity.SocialApp)(*entity.User, *enti
 
 func ProcessSocialGraph(app *entity.SocialApp, input string) (err error){
 	words := strings.Split(input, " ")
-	if len(words) != 3 || !isWordAction(words[1]){
+	action := words[1]
+	user1, user2 := words[0], words[2]
+	if len(words) != 3 || !isWordAction(action) || user1 == "" || user2 == ""{
 		return apperror.ErrInvalidKeyword
 	}
-	user1, user2 := words[0], words[2]
+	
 	userOne, userTwo := alreadyUser(user1, user2, app)
 	err = userOne.Follow(userTwo)
 	return
@@ -49,7 +52,7 @@ func ProcessUserAction(app *entity.SocialApp, input string) (err error) {
 	action := words[1]
 	user2 := words [2]
 	if len(words) == 3{
-		if action != constant.Uploaded{
+		if action != constant.Uploaded || user1 == "" || user2 == ""{
 			return apperror.ErrInvalidKeyword
 		}
 		ok, userOne :=app.IsUserInApp(user1)
@@ -67,6 +70,14 @@ func ProcessUserAction(app *entity.SocialApp, input string) (err error) {
 			return fmt.Errorf("unknown user %s", user1)
 		}
 		err = userOne.LikedPhoto(userTwo)
+		if err != nil{
+			switch{
+			case errors.Is(err, apperror.ErrLikePhotoUserNotFollowedYet):
+				err = fmt.Errorf("unable to like %s's photo", userTwo.UserName())
+			case errors.Is(err, apperror.ErrUserDoesntHaveAPhoto):
+				err = fmt.Errorf("%s doesn't have a photo", userTwo.UserName())	
+			}
+		}
 	}
 	return 
 }
