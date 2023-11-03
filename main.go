@@ -35,7 +35,7 @@ func main(){
 		switch input{
 		case "1":
 			socialGraph := promptInput(scanner, "Setup social graph: ")
-			err = util.ProcessSocialGraphValid(socialApp, socialGraph)
+			err = util.ProcessSocialGraph(socialApp, socialGraph)
 		case "2":
 			userAction := promptInput(scanner, "Enter user Actions: ")
 			err = util.ProcessUserAction(socialApp, userAction)

@@ -23,14 +23,14 @@ func alreadyUser(user1, user2 string, app *entity.SocialApp)(*entity.User, *enti
 	return userOne, userTwo
 }
 
-func ProcessSocialGraphValid(app *entity.SocialApp, input string) (err error){
+func ProcessSocialGraph(app *entity.SocialApp, input string) (err error){
 	words := strings.Split(input, " ")
 	if len(words) != 3 || !isWordAction(words[1]){
 		return apperror.ErrInvalidKeyword
 	}
 	user1, user2 := words[0], words[2]
 	userOne, userTwo := alreadyUser(user1, user2, app)
-	userOne.Follow(userTwo)
+	err = userOne.Follow(userTwo)
 	return
 }
 
@@ -56,7 +56,7 @@ func ProcessUserAction(app *entity.SocialApp, input string) (err error) {
 		if !ok{
 			return fmt.Errorf("unknown user %s", user1)
 		}
-		userOne.UploadFoto()
+		err = userOne.UploadPhoto()
 	}else if len(words) == 4{
 		if action != constant.Likes || words[3] != "photo"{
 			return apperror.ErrInvalidKeyword
@@ -66,9 +66,9 @@ func ProcessUserAction(app *entity.SocialApp, input string) (err error) {
 		if !ok1 || !ok2{
 			return fmt.Errorf("unknown user %s", user1)
 		}
-		userOne.LikedPhoto(userTwo)
+		err = userOne.LikedPhoto(userTwo)
 	}
-	return
+	return 
 }
 
 func ProcessDisplayActivity(app *entity.SocialApp, input string)(err error){

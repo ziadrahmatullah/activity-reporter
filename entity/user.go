@@ -15,7 +15,9 @@ type User struct {
 }
 
 func NewUser(name string) *User {
-	return &User{name: name}
+	newUser := &User{name: name}
+	newUser.Follow(newUser)
+	return newUser
 }
 
 func (u *User) PublisherNotify(follower Follower, notification Notification) {
@@ -27,7 +29,7 @@ func (u *User) FollowedBy(follower Follower) {
 	u.followers = append(u.followers, follower)
 }
 
-func (u *User) UploadFoto() (err error) {
+func (u *User) UploadPhoto() (err error) {
 	if !u.photo {
 		u.photo = true
 		u.notifyFollowers(&NotifyUpload{})
@@ -79,7 +81,7 @@ func (u *User) Follow(publisher Publisher) (err error) {
 	if u == publisher {
 		return apperror.ErrCantFollowThemselves
 	}
-	if u.isFollowed(publisher) {
+	if u.IsFollowed(publisher) {
 		return apperror.ErrAlreadyFollowUser
 	}
 	u.followings = append(u.followings, publisher)
@@ -97,7 +99,7 @@ func (u *User) LikedPhoto(publisher Publisher) (err error) {
 	if u.isPhotoAlreadyLiked(publisher) {
 		return apperror.ErrAlreadyLikedPhoto
 	}
-	if u.isFollowed(publisher) || u == publisher {
+	if u.IsFollowed(publisher) || u == publisher {
 		u.whoPhotoILiked = append(u.whoPhotoILiked, publisher)
 		publisher.AddLiker(u)
 		u.notifyPublisher(publisher, &NotifyLike{})
@@ -114,7 +116,7 @@ func (u *User) notifyPublisher(publisher Publisher, notification Notification) {
 	u.notifyActivityToFollower(message)
 }
 
-func (u *User) isFollowed(publisher Publisher) bool {
+func (u *User) IsFollowed(publisher Publisher) bool {
 	for _, following := range u.followings {
 		if following == publisher {
 			return true
