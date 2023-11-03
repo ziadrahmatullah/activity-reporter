@@ -1,10 +1,11 @@
 package entity
 
 type Follower interface{
-	FollowerNotify(Publisher, Notification)
-	FollowerActivityNotify(string)
+	FollowerNotification(Publisher, Notification)
+	FollowerNotificationAboutActivity(string)
 	Follow(Publisher) error
+	IsFollowed(Publisher) bool
 	LikedPhoto(Publisher) error
-	notifyPublisher(Publisher, Notification)
+	notifyActivityToAll(Publisher, Notification)
 	UserName() string
 }

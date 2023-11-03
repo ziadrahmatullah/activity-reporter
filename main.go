@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"git.garena.com/sea-labs-id/bootcamp/batch-02/ziad-rahmatullah/assignment-activity-reporter/entity"
+	"git.garena.com/sea-labs-id/bootcamp/batch-02/ziad-rahmatullah/assignment-activity-reporter/application"
 	"git.garena.com/sea-labs-id/bootcamp/batch-02/ziad-rahmatullah/assignment-activity-reporter/util"
 )
 
@@ -25,7 +25,7 @@ func main(){
 		"3. Display\n" +
 		"4. Trending\n" +
 		"5. Exit\n"
-	socialApp := entity.NewSocialApp()
+	socialApp := application.NewSocialApp()
 
 	for !exit{
 		var err error

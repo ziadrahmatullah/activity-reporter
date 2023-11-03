@@ -6,11 +6,12 @@ import (
 	"strings"
 
 	"git.garena.com/sea-labs-id/bootcamp/batch-02/ziad-rahmatullah/assignment-activity-reporter/apperror"
+	"git.garena.com/sea-labs-id/bootcamp/batch-02/ziad-rahmatullah/assignment-activity-reporter/application"
 	"git.garena.com/sea-labs-id/bootcamp/batch-02/ziad-rahmatullah/assignment-activity-reporter/constant"
 	"git.garena.com/sea-labs-id/bootcamp/batch-02/ziad-rahmatullah/assignment-activity-reporter/entity"
 )
 
-func alreadyUser(user1, user2 string, app *entity.SocialApp)(*entity.User, *entity.User){
+func alreadyUser(user1, user2 string, app *application.SocialApp)(*entity.User, *entity.User){
 	ok1 , userOne := app.IsUserInApp(user1)
 	if !ok1{
 		userOne = entity.NewUser(user1)
@@ -24,7 +25,7 @@ func alreadyUser(user1, user2 string, app *entity.SocialApp)(*entity.User, *enti
 	return userOne, userTwo
 }
 
-func ProcessSocialGraph(app *entity.SocialApp, input string) (err error){
+func ProcessSocialGraph(app *application.SocialApp, input string) (err error){
 	words := strings.Split(input, " ")
 	action := words[1]
 	user1, user2 := words[0], words[2]
@@ -46,7 +47,7 @@ func isWordAction(input string) bool{
 	return false
 }
 
-func ProcessUserAction(app *entity.SocialApp, input string) (err error) {
+func ProcessUserAction(app *application.SocialApp, input string) (err error) {
 	words := strings.Split(input, " ")
 	user1 := words[0]
 	action := words[1]
@@ -82,7 +83,7 @@ func ProcessUserAction(app *entity.SocialApp, input string) (err error) {
 	return 
 }
 
-func ProcessDisplayActivity(app *entity.SocialApp, input string)(err error){
+func ProcessDisplayActivity(app *application.SocialApp, input string)(err error){
 	ok, userOne :=app.IsUserInApp(input)
 	if !ok {
 		return fmt.Errorf("unknown user %s", input)

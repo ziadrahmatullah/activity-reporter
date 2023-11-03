@@ -12,7 +12,7 @@ type User struct {
 	followings      []Publisher
 	whoLikedMyPhoto []Follower
 	whoPhotoILiked  []Publisher
-	photo           bool
+	havePhoto       bool
 	notifications   []string
 }
 
@@ -21,7 +21,7 @@ func NewUser(name string) *User {
 	return newUser
 }
 
-func (u *User) PublisherNotify(follower Follower, notification Notification) {
+func (u *User) PublisherNotificationAboutLike(follower Follower, notification Notification) {
 	message := notification.Notify(u, follower)
 	u.notifications = append(u.notifications, message)
 }
@@ -31,31 +31,30 @@ func (u *User) FollowedBy(follower Follower) {
 }
 
 func (u *User) UploadPhoto() (err error) {
-	if !u.photo {
-		u.photo = true
-		u.notifyFollowers(&NotifyUpload{})
-		u.FollowerNotify(u, &NotifyUpload{})
+	if !u.havePhoto {
+		u.havePhoto = true
+		u.notifyUploadToFollowers(&NotifyUpload{})
+		u.FollowerNotification(u, &NotifyUpload{})
 		return
 	}
 	return apperror.ErrCannotUploadMorePhoto
 }
 
-func (u *User) notifyFollowers(notification Notification) {
+func (u *User) notifyUploadToFollowers(notification Notification) {
 	for _, follower := range u.followers {
-		follower.FollowerNotify(u, notification)
+		follower.FollowerNotification(u, notification)
 	}
 }
 
-func (u *User) notifyActivityToFollower(message string, publisher Publisher){
-	for _, follower := range u.followers{
-		if !(follower.UserName() == publisher.UserName()){
-			follower.FollowerActivityNotify(message)
+func (u *User) notifyActivityToFollowers(message string, publisher Publisher) {
+	for _, follower := range u.followers {
+		if !(follower.UserName() == publisher.UserName()) {
+			follower.FollowerNotificationAboutActivity(message)
 		}
 	}
 }
 
-
-func (u *User) AddLiker(follower Follower) {
+func (u *User) addLiker(follower Follower) {
 	u.whoLikedMyPhoto = append(u.whoLikedMyPhoto, follower)
 }
 
@@ -64,7 +63,7 @@ func (u *User) UserName() string {
 }
 
 func (u *User) UserPhoto() bool {
-	return u.photo
+	return u.havePhoto
 }
 
 func (u *User) ShowLikes() int {
@@ -72,12 +71,12 @@ func (u *User) ShowLikes() int {
 }
 
 //============================================================
-func (u *User) FollowerNotify(publisher Publisher, notification Notification) {
+func (u *User) FollowerNotification(publisher Publisher, notification Notification) {
 	message := notification.Notify(publisher, u)
 	u.notifications = append(u.notifications, message)
 }
 
-func (u *User) FollowerActivityNotify(message string){
+func (u *User) FollowerNotificationAboutActivity(message string) {
 	u.notifications = append(u.notifications, message)
 }
 
@@ -103,27 +102,26 @@ func (u *User) LikedPhoto(publisher Publisher) (err error) {
 	if u.isPhotoAlreadyLiked(publisher) {
 		return apperror.ErrAlreadyLikedPhoto
 	}
-	if u == publisher {//|| 
+	if u == publisher {
 		u.whoPhotoILiked = append(u.whoPhotoILiked, publisher)
-		publisher.AddLiker(u)
-		u.notifyPublisher(publisher, &NotifyLike{})
+		publisher.addLiker(u)
+		u.notifyActivityToAll(publisher, &NotifyLike{})
 		return
-	}else if u.IsFollowed(publisher){
+	} else if u.IsFollowed(publisher) {
 		u.whoPhotoILiked = append(u.whoPhotoILiked, publisher)
-		publisher.AddLiker(u)
-		u.notifyPublisher(publisher, &NotifyLike{})
-		u.FollowerNotify(publisher, &NotifyMySelfAboutLike{})
+		publisher.addLiker(u)
+		u.notifyActivityToAll(publisher, &NotifyLike{})
+		u.FollowerNotification(publisher, &NotifyMySelfAboutLike{})
 		return
 	}
 	return apperror.ErrLikePhotoUserNotFollowedYet
 }
 
-
-func (u *User) notifyPublisher(publisher Publisher, notification Notification) {
-	publisher.PublisherNotify(u, notification)
+func (u *User) notifyActivityToAll(publisher Publisher, notification Notification) {
+	publisher.PublisherNotificationAboutLike(u, notification)
 	tempNotification := &NotifyActivityToFollower{}
 	message := tempNotification.Notify(publisher, u)
-	u.notifyActivityToFollower(message, publisher)
+	u.notifyActivityToFollowers(message, publisher)
 }
 
 func (u *User) IsFollowed(publisher Publisher) bool {
@@ -144,11 +142,11 @@ func (u *User) isPhotoAlreadyLiked(publisher Publisher) bool {
 	return false
 }
 
-func (u *User) isHigherLikeThan(user *User) bool {
+func (u *User) IsHigherLikeThan(user *User) bool {
 	return u.ShowLikes() > user.ShowLikes()
 }
 
-func (u *User) DisplayActivity() (output string){
+func (u *User) DisplayActivity() (output string) {
 	output += fmt.Sprintf("\n%s activities:\n", u.UserName())
 	for _, notification := range u.notifications {
 		output += notification + "\n"

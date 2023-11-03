@@ -1,19 +1,21 @@
-package entity
+package application
 
 import (
 	"fmt"
 	"sort"
+
+	"git.garena.com/sea-labs-id/bootcamp/batch-02/ziad-rahmatullah/assignment-activity-reporter/entity"
 )
 
 type SocialApp struct{
-	users []*User
+	users []*entity.User
 }
 
 func NewSocialApp() *SocialApp{
 	return &SocialApp{}
 }
 
-func (sa *SocialApp) AddUser(user *User){
+func (sa *SocialApp) AddUser(user *entity.User){
 	sa.users = append(sa.users, user)
 }
 
@@ -22,9 +24,9 @@ func (sa *SocialApp) Trending() string{
 	title := "Trending photos:\n"
 	i := 0
 	for _, user := range sa.users{
-		if i == 3{
-			break
-		}
+		// if i == 3{
+		// 	break
+		// }
 		if !user.UserPhoto(){
 			continue
 		}
@@ -39,11 +41,11 @@ func (sa *SocialApp) Trending() string{
 }
 func (sa *SocialApp) sortByTrending(){
 	sort.Slice(sa.users, func(i, j int) bool {
-		return sa.users[i].isHigherLikeThan(sa.users[j])
+		return sa.users[i].IsHigherLikeThan(sa.users[j])
 	})
 }
 
-func (sa *SocialApp) IsUserInApp(newUser string) (eq bool, user *User){
+func (sa *SocialApp) IsUserInApp(newUser string) (eq bool, user *entity.User){
 	for _, user := range sa.users {
 		if user.UserName() == newUser{
 			return true, user

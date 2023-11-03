@@ -1,13 +1,12 @@
 package entity
 
 type Publisher interface{
-	PublisherNotify(Follower, Notification)
+	PublisherNotificationAboutLike(Follower, Notification)
 	FollowedBy(Follower)
-	IsFollowed(Publisher) bool
 	UploadPhoto() error
-	AddLiker(Follower)
-	notifyFollowers(Notification)
-	notifyActivityToFollower(string, Publisher)
+	addLiker(Follower)
+	notifyUploadToFollowers(Notification)
+	notifyActivityToFollowers(string, Publisher)
 	UserName() string
 	UserPhoto() bool
 }

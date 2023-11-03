@@ -54,6 +54,40 @@ func TestUploadPhoto(t *testing.T){
 	})
 }
 
+func TestShowLikes(t *testing.T){
+	t.Run("should return 2 when photo likes 2 times", func(t *testing.T) {
+		user1, user2 := "Alice", "Bob"
+		newUser1 := entity.NewUser(user1)
+		newUser2 := entity.NewUser(user2)
+		newUser2.Follow(newUser1)
+		newUser1.UploadPhoto()
+		newUser1.LikedPhoto(newUser1)
+		newUser2.LikedPhoto(newUser1)
+		expected := 2
+
+		result := newUser1.ShowLikes()
+
+		assert.Equal(t, expected, result)
+	})
+}
+
+func TestIsHigherLikeThan(t *testing.T){
+	t.Run("should return true when user1 more likes than user2", func(t *testing.T) {
+		user1, user2 := "Alice", "Bob"
+		Alice := entity.NewUser(user1)
+		Bob := entity.NewUser(user2)
+		Bob.Follow(Alice)
+		Alice.UploadPhoto()
+		Alice.LikedPhoto(Alice)
+		Bob.LikedPhoto(Alice)
+		Bob.UploadPhoto()
+		Bob.LikedPhoto(Bob)
+
+		eq := Alice.IsHigherLikeThan(Bob)
+
+		assert.True(t, eq)
+	})
+}
 
 
 // =====================================================
@@ -67,6 +101,27 @@ func TestFollow(t *testing.T) {
 		newUser1.Follow(newUser2)
 
 		assert.True(t, newUser1.IsFollowed(newUser2))
+	})
+
+	t.Run("should return ErrCantFollowThemselves when follow myself", func(t *testing.T) {
+		user1 := entity.NewUser("Alice")
+		expected := apperror.ErrCantFollowThemselves
+
+		err := user1.Follow(user1)
+
+		assert.ErrorIs(t, err, expected )
+	})
+
+	t.Run("should return ErrAlreadyFollowUser when follow 2 times the same user", func(t *testing.T) {
+		user1, user2 := "Alice", "Bob"
+		newUser1 := entity.NewUser(user1)
+		newUser2 := entity.NewUser(user2)
+		expected := apperror.ErrAlreadyFollowUser
+
+		newUser1.Follow(newUser2)
+		err := newUser1.Follow(newUser2)
+		
+		assert.ErrorIs(t, err, expected)
 	})
 }
 func TestLikedPhoto(t *testing.T) {
@@ -179,7 +234,7 @@ func TestLikedPhoto(t *testing.T) {
 	// 	Bill.LikedPhoto(Bill)
 	// 	Alice.LikedPhoto(Bill)
 
-	// 	assert.Equal(t, Bill.DisplayActivity(), "fddf")
+	// 	assert.Equal(t, Alice.DisplayActivity(), "fddf")
 
 	// })
 }
